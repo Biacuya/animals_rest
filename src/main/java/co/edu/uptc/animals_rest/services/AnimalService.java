@@ -15,6 +15,10 @@ import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
 @Service
 public class AnimalService {
      private static final Logger logger = LoggerFactory.getLogger(AnimalService.class);
@@ -59,5 +63,37 @@ public class AnimalService {
     
         return animales;
     }
+
+    public List<Map<String, Object>> countAnimalsByCategory() throws IOException {
+        List<String> listAnimal = Files.readAllLines(Paths.get(filePath));
+        List<Animal> animales = new ArrayList<>();
+
+        // Procesar las líneas del archivo
+        for (String line : listAnimal) {
+            String[] parts = line.split(",");
+            if (parts.length == 2) {
+                String categoria = parts[0].trim();
+                String nombre = parts[1].trim();
+                animales.add(new Animal(nombre, categoria));
+            }
+        }
+
+        // Contar los animales por categoría
+        Map<String, Long> conteoPorCategoria = animales.stream()
+                .collect(Collectors.groupingBy(Animal::getCategoria, Collectors.counting()));
+
+        // Convertir a lista de mapas
+        List<Map<String, Object>> resultado = new ArrayList<>();
+        for (Map.Entry<String, Long> entry : conteoPorCategoria.entrySet()) {
+            Map<String, Object> categoriaMap = new HashMap<>();
+            categoriaMap.put("category", entry.getKey());
+            categoriaMap.put("number", entry.getValue());
+            resultado.add(categoriaMap);
+        }
+
+        return resultado;
+    }
 }
+
+
 
