@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.uptc.animals_rest.models.Animal;
 import co.edu.uptc.animals_rest.services.AnimalService;
+import java.util.Map;
 
 
 
@@ -37,6 +38,11 @@ public class AnimalController {
     public List<Animal> getAnimal(@RequestParam int from, @RequestParam int to) throws IOException {
         logger.info("getAnimal called with parameters: from = {}, to = {}", from, to);
         return animalService.getAnimalInRange(from, to);
+    }
+
+    @GetMapping("/numberByCategory")
+    public List<Map<String, Object>> getNumberByCategory() throws IOException {
+        return animalService.countAnimalsByCategory();
     }
 
 
